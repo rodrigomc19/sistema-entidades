@@ -1,0 +1,162 @@
+<!-- Exibe um spinner de carregamento enquanto os dados estão sendo processados -->
+<div *ngIf="isLoading" class="text-center my-5">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Carregando...</span>
+  </div>
+</div>
+
+<!-- Formulário principal: só aparece quando isLoading for falso -->
+<div *ngIf="!isLoading" class="form-wrapper container mt-4">
+
+  <!-- Título da página com botão de excluir no modo edição -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="form-title">{{ isEditMode ? 'Editar Entidade' : 'Nova Entidade' }}</h2>
+
+    <!-- Botão de excluir só aparece no modo edição -->
+    <button
+      *ngIf="isEditMode"
+      type="button"
+      class="btn btn-danger"
+      (click)="abrirModalExclusao()"
+    >
+      Excluir
+    </button>
+  </div>
+
+  <!-- Alerta para campos obrigatórios quando o formulário for inválido e submetido -->
+  <div *ngIf="formSubmitted && clinicaForm.invalid" class="alert alert-danger text-center">
+    Por favor, preencha todos os campos obrigatórios.
+  </div>
+
+  <!-- Formulário reativo com validações no Angular -->
+  <form [formGroup]="clinicaForm" (ngSubmit)="onSubmit()">
+    <div class="row g-3">
+      
+      <!-- Campo: Razão Social -->
+      <div class="col-md-6">
+        <label for="razao_social" class="form-label">Razão Social *</label>
+        <input id="razao_social" type="text" class="form-control" formControlName="razao_social" />
+        <div *ngIf="formSubmitted && clinicaForm.get('razao_social')?.invalid" class="text-danger">
+          Campo obrigatório.
+        </div>
+      </div>
+
+      <!-- Campo: Nome Fantasia -->
+      <div class="col-md-6">
+        <label for="nome_fantasia" class="form-label">Nome Fantasia *</label>
+        <input id="nome_fantasia" type="text" class="form-control" formControlName="nome_fantasia" />
+        <div *ngIf="formSubmitted && clinicaForm.get('nome_fantasia')?.invalid" class="text-danger">
+          Campo obrigatório.
+        </div>
+      </div>
+
+      <!-- Campo: CNPJ com máscara -->
+      <div class="col-md-6">
+        <label for="cnpj" class="form-label">CNPJ *</label>
+        <input
+          id="cnpj"
+          type="text"
+          class="form-control"
+          formControlName="cnpj"
+          maxlength="18"
+          mask="00.000.000/0000-00"
+          placeholder="00.000.000/0000-00"
+        />
+        <div *ngIf="formSubmitted && clinicaForm.get('cnpj')?.invalid" class="text-danger">
+          CNPJ obrigatório e deve ter no máximo 18 caracteres.
+        </div>
+      </div>
+
+      <!-- Campo: Regional (select dinâmico) -->
+      <div class="col-md-6">
+        <label for="regional_id" class="form-label">Regional *</label>
+        <select id="regional_id" class="form-select" formControlName="regional_id">
+          <option value="">Selecione</option>
+          <option *ngFor="let r of regionais" [value]="r.id">{{ r.nome }}</option>
+        </select>
+        <div *ngIf="formSubmitted && clinicaForm.get('regional_id')?.invalid" class="text-danger">
+          Campo obrigatório.
+        </div>
+      </div>
+
+      <!-- Campo: Data de Inauguração -->
+      <div class="col-md-6">
+        <label for="data_inauguracao" class="form-label">Data de Inauguração *</label>
+        <input id="data_inauguracao" type="date" class="form-control" formControlName="data_inauguracao" />
+        <div *ngIf="formSubmitted && clinicaForm.get('data_inauguracao')?.invalid" class="text-danger">
+          Campo obrigatório.
+        </div>
+      </div>
+
+      <!-- Campo: Checkbox para marcar se a entidade está ativa -->
+      <div class="col-md-6 d-flex align-items-end">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" formControlName="ativa" id="ativa" />
+          <label class="form-check-label" for="ativa">Ativa</label>
+        </div>
+      </div>
+
+      <!-- Campo: Especialidades usando ng-select (múltiplas opções com chips e botão remover) -->
+      <div class="col-md-6">
+        <label class="form-label">Especialidades Médicas *</label>
+
+        <ng-select
+          [items]="especialidades"
+          bindLabel="nome"
+          bindValue="id"
+          [multiple]="true"
+          [clearable]="true"
+          [hideSelected]="true"
+          [closeOnSelect]="false"
+          [searchable]="true"
+          [placeholder]="clinicaForm.get('especialidades')?.value?.length ? '' : 'Selecione as especialidades'"
+          formControlName="especialidades"
+          class="form-control ng-especialidades"
+        >
+          <!-- Customização do visual dos itens selecionados -->
+          <ng-template ng-tag-tmp let-item="item" let-clear="clear">
+            <span class="tag-chip">
+              {{ item.nome }}
+              <span class="remove-btn" (click)="clear(item)">×</span>
+            </span>
+          </ng-template>
+        </ng-select>
+
+        <div *ngIf="formSubmitted && clinicaForm.get('especialidades')?.errors?.['minSelected']" class="text-danger mt-1">
+          Selecione pelo menos uma especialidade.
+        </div>
+      </div>
+    </div>
+
+    <!-- Botões de ação -->
+    <div class="d-flex justify-content-end gap-2 mt-4">
+      <button type="button" class="btn btn-outline-secondary" (click)="cancelar()">Cancelar</button>
+      <button type="submit" class="btn btn-primary">Salvar</button>
+    </div>
+  </form>
+
+  <!-- Modal de confirmação para exclusão da entidade -->
+  <div
+    class="modal fade"
+    id="confirmDeleteModal"
+    tabindex="-1"
+    aria-labelledby="confirmDeleteModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmar Exclusão</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <div class="modal-body">
+          Tem certeza que deseja excluir esta Entidade?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-danger" (click)="confirmarExclusao()">Excluir</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

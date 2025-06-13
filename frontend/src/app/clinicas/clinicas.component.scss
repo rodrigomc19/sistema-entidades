@@ -1,0 +1,66 @@
+// Estilização da tabela principal
+.table {
+  border-radius: 0.75rem;         // cantos arredondados
+  overflow: hidden;               // evita que o conteúdo "vaze" da borda
+
+  thead {
+    background-color: #f8f9fa;    // cabeçalho com fundo cinza claro (estilo Bootstrap)
+  }
+
+  th, td {
+    vertical-align: middle;       // centraliza verticalmente o conteúdo das células
+    border: 1px solid #dee2e6;    // borda leve para separação visual
+  }
+}
+
+// Hover nas linhas da tabela (melhora UX ao passar o mouse)
+.table-hover tbody tr:hover {
+  background-color: #f1f1f1;      // leve destaque no hover
+}
+
+// Estilização dos botões de paginação (estilo pill arredondado)
+.rounded-pagination .page-link {
+  border-radius: 1rem;
+  padding: 0.4rem 0.9rem;
+  margin: 0 0.2rem;
+  color: #0d6efd;                 // azul Bootstrap
+  border: 1px solid #dee2e6;
+  background-color: #fff;
+}
+
+// Estado de botão desabilitado na paginação
+.rounded-pagination .page-item.disabled .page-link {
+  color: #aaa;                    // texto cinza claro
+  background-color: #f8f9fa;      // fundo cinza claro
+  border-color: #dee2e6;
+}
+
+// Ícones de ação (visualizar / editar) como botões limpos com tamanho maior
+.btn-link {
+  font-size: 1.25rem;
+  padding: 0.25rem 0.5rem;
+}
+
+// Backdrop da modal de visualização de clínica
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.5);    // fundo escuro semitransparente
+  z-index: 1050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// Container central da modal
+.modal-container {
+  background: #fff;
+  border-radius: 8px;
+  padding: 2rem;
+  max-width: 700px;
+  width: 100%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2); // sombra sutil
+}

@@ -1,0 +1,79 @@
+<!-- Spinner de carregamento enquanto os dados da clínica são buscados -->
+<div *ngIf="isLoading" class="text-center my-5">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Carregando...</span>
+  </div>
+</div>
+
+<!-- Container principal que exibe os dados da clínica após o carregamento -->
+<div class="clinica-view-container container mt-4" *ngIf="!isLoading && clinica">
+
+  <!-- Cabeçalho com título da página e botão para editar a entidade -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="form-title m-0">Detalhes da Entidade</h2>
+    <button class="btn btn-primary" [routerLink]="['/clinicas/editar', clinica.id]">Editar</button>
+  </div>
+
+  <!-- Layout em grade com os principais dados da entidade -->
+  <div class="row g-3">
+    <div class="col-md-6">
+      <strong>Nome Fantasia:</strong>
+      <p>{{ clinica.nome_fantasia }}</p>
+    </div>
+
+    <div class="col-md-6">
+      <strong>Razão Social:</strong>
+      <p>{{ clinica.razao_social }}</p>
+    </div>
+
+    <div class="col-md-6">
+      <strong>CNPJ:</strong>
+      <p>{{ clinica.cnpj | cnpjMask }}</p> <!-- Pipe customizado para formatar o CNPJ -->
+    </div>
+
+    <div class="col-md-6">
+      <strong>Regional:</strong>
+      <p>{{ clinica.regional.nome }}</p> <!-- Exibe o nome da regional relacionada -->
+    </div>
+
+    <div class="col-md-6">
+      <strong>Data de Inauguração:</strong>
+      <p>{{ clinica.data_inauguracao | date: 'dd/MM/yyyy' }}</p>
+    </div>
+
+    <div class="col-md-6">
+      <strong>Ativa:</strong>
+      <p>{{ clinica.ativa ? 'Sim' : 'Não' }}</p>
+    </div>
+  </div>
+
+  <!-- Bloco para exibir especialidades associadas à clínica -->
+  <div *ngIf="clinica?.especialidades" class="mb-3 mt-4">
+    <h6>Especialidades:</h6>
+
+    <!-- Exibe até 5 especialidades diretamente -->
+    <div class="d-flex flex-wrap gap-2">
+      <span
+        *ngFor="let esp of visibleEspecialidades"
+        class="badge bg-secondary"
+      >
+        {{ esp.nome }}
+      </span>
+
+      <!-- Se houver mais de 5 especialidades, mostra um botão "+N" para expandir -->
+      <span
+        *ngIf="clinica.especialidades.length > 5 && !showAllEspecialidades"
+        class="badge bg-light text-dark border"
+        style="cursor: pointer"
+        (click)="toggleEspecialidades()"
+      >
+        +{{ clinica.especialidades.length - 5 }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Botão para fechar e voltar para a listagem -->
+  <div class="text-end mt-4">
+    <button class="btn btn-outline-secondary" (click)="close()">Fechar</button>
+  </div>
+</div>

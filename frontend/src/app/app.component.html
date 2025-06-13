@@ -1,0 +1,24 @@
+<!-- Container de Toasts: aparece fixado no canto superior direito -->
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999">
+  
+  <!-- Toast de sucesso (verde), com mensagem dinâmica -->
+  <div class="toast align-items-center text-bg-success border-0" role="alert" #successToast>
+    <div class="d-flex">
+      <!-- Corpo da mensagem exibida no toast -->
+      <div class="toast-body">
+        {{ toastMessage }}
+      </div>
+
+      <!-- Botão para fechar o toast manualmente -->
+      <button
+        type="button"
+        class="btn-close btn-close-white me-2 m-auto"
+        data-bs-dismiss="toast"
+        aria-label="Fechar">
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Saída do roteador: aqui os componentes das rotas são carregados -->
+<router-outlet />

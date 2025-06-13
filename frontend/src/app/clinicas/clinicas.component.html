@@ -1,0 +1,120 @@
+<!-- Container principal da listagem de clínicas -->
+<div class="clinica-list container mt-4">
+  
+  <!-- Cabeçalho da tela com título e botão para criar nova entidade -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="page-title m-0">Entidades</h2>
+    <button class="btn btn-primary" routerLink="/clinicas/nova">
+      + Nova Entidade
+    </button>
+  </div>
+
+  <!-- Campo de busca com botão de limpar -->
+  <div class="search-bar input-group mb-4 justify-content-center">
+    <input
+      type="text"
+      class="form-control w-50"
+      [formControl]="searchControl"
+      placeholder="Buscar entidades..."
+    />
+    
+    <!-- Botão “X” para limpar o campo de busca (só aparece se houver texto digitado) -->
+    <button
+      class="btn btn-outline-secondary"
+      type="button"
+      (click)="clearSearch()"
+      *ngIf="searchControl.value"
+    >
+      ✕
+    </button>
+  </div>
+
+  <!-- Tabela com dados das clínicas -->
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover">
+      <thead class="table-light">
+        <tr>
+          <th>Nome Fantasia</th>
+          <th>Regional</th>
+          <th>Especialidades</th>
+          <th>Ativa</th>
+          <th class="text-center">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Loop nas clínicas carregadas -->
+        <tr *ngFor="let clinica of clinicas">
+          <td>{{ clinica.nome_fantasia }}</td>
+          <td>{{ clinica.regional?.nome }}</td>
+
+          <!-- Exibe a primeira especialidade e, se houver mais, mostra contador -->
+          <td>
+            {{ clinica.especialidades?.[0]?.nome || '—' }}
+            <span *ngIf="clinica.especialidades?.length > 1">
+              e mais {{ clinica.especialidades.length - 1 }}
+            </span>
+          </td>
+
+          <td>{{ clinica.ativa ? 'Sim' : 'Não' }}</td>
+
+          <!-- Ações: visualizar (abre modal) e editar (redireciona) -->
+          <td class="text-center">
+            <button
+              class="btn btn-link text-dark me-2"
+              (click)="openVisualizar(clinica.id)"
+              title="Visualizar"
+            >
+              <i class="bi bi-eye"></i>
+            </button>
+
+            <button
+              class="btn btn-link text-primary"
+              [routerLink]="['/clinicas/editar', clinica.id]"
+              title="Editar"
+            >
+              <i class="bi bi-pencil"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Caso não encontre nenhuma clínica -->
+  <p *ngIf="clinicas.length === 0" class="text-center mt-4">
+    Nenhuma clínica encontrada.
+  </p>
+
+  <!-- Paginação da tabela (simples e estilizada) -->
+  <div class="pagination-wrapper d-flex justify-content-center align-items-center mt-3">
+    <nav>
+      <ul class="pagination rounded-pagination">
+        <!-- Botão página anterior -->
+        <li class="page-item" [class.disabled]="page <= 1">
+          <button class="page-link" (click)="prevPage()">«</button>
+        </li>
+
+        <!-- Página atual -->
+        <li class="page-item disabled">
+          <span class="page-link">Página {{ page }} de {{ totalPages }}</span>
+        </li>
+
+        <!-- Botão próxima página -->
+        <li class="page-item" [class.disabled]="page >= totalPages">
+          <button class="page-link" (click)="nextPage()">»</button>
+        </li>
+      </ul>
+    </nav>
+  </div>
+
+  <!-- Modal de visualização da clínica -->
+  <div class="modal-backdrop" *ngIf="selectedClinicaId">
+    <div class="modal-container">
+      <app-clinica-view
+        *ngIf="selectedClinicaId"
+        [clinicaId]="selectedClinicaId"
+        (closed)="closeVisualizar()"
+      ></app-clinica-view>
+    </div>
+  </div>
+</div>

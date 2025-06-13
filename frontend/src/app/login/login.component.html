@@ -1,0 +1,92 @@
+<!-- Container principal da página de login centralizado verticalmente e horizontalmente -->
+<div class="login-page d-flex justify-content-center align-items-center">
+  <!-- Cartão de login com padding -->
+  <div class="login-card card p-4">
+    <!-- Título do formulário -->
+    <h3 class="card-title text-center mb-3">Login</h3>
+
+    <!-- Mensagem de erro exibida se as credenciais estiverem incorretas -->
+    <div *ngIf="loginError" class="alert alert-danger text-center py-2">
+      {{ loginError }}
+    </div>
+
+    <!-- Mensagem de sucesso ao realizar login corretamente -->
+    <div *ngIf="loginSuccess" class="alert alert-success text-center py-2">
+      Login realizado com sucesso! Redirecionando...
+    </div>
+
+    <!-- Formulário de login reativo -->
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+
+      <!-- Campo de e-mail -->
+      <div class="mb-3">
+        <label for="email" class="form-label">E-mail</label>
+        <input
+          id="email"
+          type="email"
+          class="form-control"
+          formControlName="email"
+          placeholder="seu@exemplo.com"
+        />
+        <!-- Validação de e-mail: obrigatório e formato -->
+        <div
+          *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+          class="form-text text-danger"
+        >
+          {{
+            loginForm.get('email')?.hasError('required')
+              ? 'E-mail obrigatório'
+              : 'E-mail inválido'
+          }}
+        </div>
+      </div>
+
+      <!-- Campo de senha com botão para exibir/ocultar -->
+      <div class="mb-3 position-relative">
+        <label for="password" class="form-label">Senha</label>
+        <div class="input-group">
+          <input
+            id="password"
+            [type]="showPassword ? 'text' : 'password'"
+            class="form-control"
+            formControlName="password"
+            placeholder="••••••••"
+          />
+          <!-- Botão com ícone para alternar a visibilidade da senha -->
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            (click)="showPassword = !showPassword"
+            aria-label="Mostrar senha"
+          >
+            <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+          </button>
+        </div>
+        <!-- Validação da senha: obrigatória e mínimo de caracteres -->
+        <div
+          *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+          class="form-text text-danger"
+        >
+          {{
+            loginForm.get('password')?.hasError('required')
+              ? 'Senha obrigatória'
+              : 'Mínimo 6 caracteres'
+          }}
+        </div>
+      </div>
+
+      <!-- Botão de envio com spinner de carregamento durante a requisição -->
+      <div class="d-grid">
+        <button type="submit" class="btn btn-primary" [disabled]="isLoading">
+          <!-- Texto padrão -->
+          <span *ngIf="!isLoading">Entrar</span>
+          <!-- Texto com loading durante requisição -->
+          <span *ngIf="isLoading">
+            <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+            Entrando...
+          </span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
